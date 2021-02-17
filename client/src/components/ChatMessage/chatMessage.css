@@ -1,0 +1,33 @@
+.message_container {
+  border-radius: 10px;
+  margin-bottom: 5px;
+  padding: 5px 7px;
+  max-width: 80%;
+}
+
+.message_container.left {
+  align-self: flex-start;
+  background-color: #f7d3ca;
+}
+
+.message_container.right {
+  align-self: flex-end;
+  background-color: #daebfa;
+}
+
+.message_sender {
+  font-weight: 700;
+}
+
+.message_time {
+  float: right;
+  padding: 0 0 0 10px;
+}
+
+.message_container.right .message_time {
+  color: #4981b3;
+}
+
+.message_container.left .message_time {
+  color: #a55541;
+}

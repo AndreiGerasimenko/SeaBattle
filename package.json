@@ -1,0 +1,32 @@
+{
+  "name": "sea-battle",
+  "version": "1.0.0",
+  "description": "Sea Battle application",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon app.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run server \" \"npm run client\""
+  },
+  "keywords": [
+    "MERN",
+    "game",
+    "websocket"
+  ],
+  "author": "Andrii Herasymenko",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "config": "^3.3.2",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "express-ws": "^4.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.7"
+  }
+}

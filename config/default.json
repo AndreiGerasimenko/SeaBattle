@@ -1,0 +1,5 @@
+{
+  "port": 5000,
+  "jwtSecret": "Malvishka342",
+  "mongoUri": "mongodb+srv://Andrii_Herasimenko:Andrei503@cluster0.ut4dj.azure.mongodb.net/seaBattle?retryWrites=true&w=majority"
+}

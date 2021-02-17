@@ -1,0 +1,14 @@
+.chat-icon-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.chat-icon {
+  font-size: 35px;
+  cursor: pointer;
+}
+
+.ant-drawer-wrapper-body .ant-drawer-body {
+  padding: 0;
+}

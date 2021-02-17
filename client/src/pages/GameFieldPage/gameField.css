@@ -1,0 +1,12 @@
+.game-container {
+  border: 1px solid red;
+  display: flex;
+  width: 99%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.game {
+  flex-grow: 1;
+  border: 1px solid green;
+}

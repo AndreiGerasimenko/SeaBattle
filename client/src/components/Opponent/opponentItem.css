@@ -1,0 +1,34 @@
+.oppItem-container {
+  font-size: 19px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+.oppItem-container.online {
+  cursor: pointer;
+}
+
+.oppItem-container.focused {
+  background-color: rgb(196, 247, 244);
+}
+
+.oppItem-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.oppItem-status.online {
+  background-color: rgb(111, 192, 111);
+}
+
+.oppItem-status.offline {
+  border: 1px solid grey;
+}
+
+.oppItem-status.online {
+  background-color: rgb(111, 192, 111);
+}
