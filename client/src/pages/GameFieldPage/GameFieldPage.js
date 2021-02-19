@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from 'react-redux';
 import { setOpponentID, setOpponentNickname } from "../../redux/actions";
 import { ChatWrapper } from "../../components/chatWrapper/chatWrapper.component";
+import { MainFieldSetup } from "../../components/MainFieldSetup/MainFieldSetup.component";
 import "./gameField.css";
 
 export const GameFieldPage = () => {
@@ -17,7 +18,7 @@ export const GameFieldPage = () => {
   return (
             <div className="game-container">
               <div className="game">
-                Here will be the game fields
+                <MainFieldSetup />
               </div>
 
               <ChatWrapper />
