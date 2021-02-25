@@ -3,6 +3,7 @@ const { deleteMatchPair,
         getChatHistory, 
         sendMessage,
         addWsConnection } = require("../store/currentMatchPairs");
+const { broadcastPlayerList } = require("../store/playerList");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 
@@ -45,6 +46,7 @@ router.ws('/', async (ws, req) => {
             id: userId,
             opponentId
         });
+        broadcastPlayerList();
     });
 
     addWsConnection(userId, ws);

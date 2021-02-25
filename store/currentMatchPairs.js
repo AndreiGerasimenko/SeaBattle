@@ -43,6 +43,8 @@ const addMatchPair = async ({id, nickname, opponentId, opponentNickname}) => {
         await chatRoom.save();
     }
 
+    // broadcastPlayerList();
+
     // console.log(matches.length, "Matches");
 }
 
@@ -95,8 +97,18 @@ const sendMessage = async (id, opponentId, text, time) => {
     );
 }
 
+const getCurrentMatchesID = () => {
+    const arrayOfId = [];
+    matches.forEach(match => {
+        arrayOfId.push(match.id, match.opponentId);
+    }); 
+
+    return arrayOfId;
+}
+
 module.exports = { addMatchPair, 
                    deleteMatchPair, 
                    getChatHistory, 
                    sendMessage,
-                   addWsConnection };
+                   addWsConnection,
+                   getCurrentMatchesID };

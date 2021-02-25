@@ -1,5 +1,6 @@
 const sortOnline = require("../functions/onlineUser");
 const { getAllUsersFromDB } = require("./usersList");
+const { getCurrentMatchesID } = require("./currentMatchPairs");
 
 const playerList = new Map();
 const addPlayer = (userId, ws) => {
@@ -10,9 +11,10 @@ const deletePlayer = (userId) => {
 }
 
 
-const broadcastPlayerList = (ws) => {
+const broadcastPlayerList = () => {
     const usersCandidates = getAllUsersFromDB();
-    const usersArrayToSend = sortOnline(usersCandidates, Array.from(playerList.entries()));
+    const currentMatchesId = getCurrentMatchesID();
+    const usersArrayToSend = sortOnline(usersCandidates, Array.from(playerList.entries()), currentMatchesId);
         playerList.forEach(connection => {
             if(connection.readyState === 1) {
                 connection.send(

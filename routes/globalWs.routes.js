@@ -37,7 +37,7 @@ router.ws('/', async (ws, req) => {
                         opponentWs 
                     });
                 } else {
-                    broadcastPlayerList(ws);
+                    broadcastPlayerList();
                 }
                 break;
             case "CHALLANGE_ACCEPTANCE": 
@@ -62,13 +62,13 @@ router.ws('/', async (ws, req) => {
     ws.on("close", () => {
         console.log("Connection global closed");
         deletePlayer(decodedToken.userId);
-        broadcastPlayerList(ws);
+        broadcastPlayerList();
     });
 
     try {
         const usersFromDB = await User.find().select('nickname');
         setAllUsersFromDB(usersFromDB);
-        broadcastPlayerList(ws);
+        broadcastPlayerList();
     } catch(e) {
         return ws.close(1008, "Database error");
     }

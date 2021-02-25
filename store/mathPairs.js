@@ -1,5 +1,6 @@
 const { getAllUsersFromDB } = require("./usersList");
 const { addMatchPair } = require("./currentMatchPairs");
+const { broadcastPlayerList } = require("./playerList");
 
 const matchRequests = [];
 
@@ -75,6 +76,8 @@ const confirmMatchPair = async ({ id, opponentId }) => {
     
         try {
             await addMatchPair({...foundMatchRequest});
+
+            broadcastPlayerList();
 
             foundMatchRequest.ws.send(JSON.stringify({
                 type: "CHALLANGE_CONFIRMATION",
