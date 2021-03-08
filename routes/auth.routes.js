@@ -5,6 +5,7 @@ const config = require("config");
 const { check, validationResult } = require("express-validator");
 const tokensGeneratop = require("../functions/tokensGenerator");
 const User = require("../models/User");
+const { playerList } = require("../store/playerList");
 const router = new Router();
 
 // /api/auth/register
@@ -87,6 +88,10 @@ router.post(
         return res.status(400).json({ message: "Invalid credentials" });
       }
 
+      if(playerList.has(user.id)) {
+        return res.status(400).json({ message: "The account has already been logged in "});
+      }
+
       const [token, refreshToken] = tokensGeneratop(user.id);
 
       res.json({ token, userId: user.id, refreshToken });
@@ -98,7 +103,7 @@ router.post(
   }
 );
 
-// /api/auth/login
+// /api/auth/refresh
 
 router.post(
   "/refresh",
