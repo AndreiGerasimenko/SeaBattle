@@ -11,6 +11,7 @@ import { GameFieldPage } from "../../pages/GameFieldPage/GameFieldPage";
 import { useWebsocket } from "../../hooks/websocket.hook";
 import { ModalComponent } from "../Modal/Modal.component";
 import { OpponentsList } from "../OpponentsList/OpponentList";
+import { showNotification } from '../../functions/showNotification';
 
 export const AuthWrapper = () => {
     const dispatch = useDispatch();
@@ -41,6 +42,13 @@ export const AuthWrapper = () => {
                 setModalType(null);
                 setOpponentId(null);
                 setModalType(null);
+                
+                showNotification({
+                    type: "error",
+                    message: "Challenge rejection",
+                    description: message?.payload
+                });
+                
                 break;
             case "CHALLANGE_CONFIRMATION":
                 setConfirmLoading(false);

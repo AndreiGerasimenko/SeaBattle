@@ -6,7 +6,6 @@ const matchRequests = [];
 
 const addMatchRequest = ({id, ws, opponentId, opponentWs}) => {
     const timeoutId = setTimeout(() => {
-        console.log("Oh nooooooooooooo!!!!");
 
         const index = matchRequests.findIndex(
                 item => item.id === id && item.opponentId === opponentId
@@ -18,11 +17,11 @@ const addMatchRequest = ({id, ws, opponentId, opponentWs}) => {
         try {
             ws.send(JSON.stringify({
                 type: "CHALLANGE_REJECTION",
-                payload: null
+                payload: "Response time is over"
             }));
             opponentWs.send(JSON.stringify({
                 type: "CHALLANGE_REJECTION",
-                payload: null
+                payload: "Response time is over"
             }));
         } catch(e) {
             console.log("Sending ERROR");
@@ -108,7 +107,7 @@ const confirmMatchPair = async ({ id, opponentId }) => {
                 if(newIndex !== -1) {
                     matchRequests[newIndex].opponentWs.send(JSON.stringify({
                         type: "CHALLANGE_REJECTION",
-                        payload: null
+                        payload: "Opponent didn`t accept the challenge"
                     }));
     
                     clearTimeout(matchRequests[newIndex].timeoutId);
@@ -123,7 +122,7 @@ const confirmMatchPair = async ({ id, opponentId }) => {
             console.log("Sending Error");
             foundMatchRequest.opponentWs.send(JSON.stringify({
                 type: "CHALLANGE_REJECTION",
-                payload: null
+                payload: "The error occured"
             }));
         }
 
@@ -143,7 +142,7 @@ const rejectMatchRequest = ({ id, opponentId }) => {
         try {
             foundMatchRequest.ws.send(JSON.stringify({
                 type: "CHALLANGE_REJECTION",
-                payload: null
+                payload: "Opponent didn`t accept the challenge"
             }));
         } catch(e) {
             console.log("Sending Error");
