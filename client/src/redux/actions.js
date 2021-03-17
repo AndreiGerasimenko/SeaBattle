@@ -84,9 +84,10 @@ export const setHoverState = (array) => {
     }
 }
 
-export const nextSettingStage = () => {
+export const nextSettingStage = (stage) => {
     return {
         type: SET_SETTING_PROGRESS,
+        payload: stage
     }
 }
 

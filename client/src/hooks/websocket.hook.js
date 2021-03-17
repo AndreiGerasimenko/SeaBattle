@@ -3,7 +3,12 @@ import { useSelector } from 'react-redux';
 import { useAuth } from "../hooks/auth.hook";
 import { useHttp } from "../hooks/http.hook";
 
-export const useWebsocket = ({ url, name, onMessageCallback, opponentId }) => {
+export const useWebsocket = ({ 
+    url, 
+    name, 
+    onMessageCallback, 
+    opponentId,
+    onWSClose }) => {
     const { token, refreshToken, userId } = useSelector(state => state.auth);
     const [wsConnection, setWsConnection] = useState(null);
     const { logout, login } = useAuth();
@@ -22,7 +27,7 @@ export const useWebsocket = ({ url, name, onMessageCallback, opponentId }) => {
 
     useEffect(() => {
         return () => {
-            if(wsConnection && wsConnection.readyState === 1) {
+            if(wsConnection && wsConnection.readyState === WebSocket.OPEN) {
                 wsConnection.close();
             }
         }
@@ -31,6 +36,9 @@ export const useWebsocket = ({ url, name, onMessageCallback, opponentId }) => {
     useEffect(() => {
         if(wsConnection) {
             wsConnection.onclose = async (event) => {
+                if(typeof(onWSClose) == "function" ) {
+                    onWSClose(event);
+                }
                 console.log(`connection ${name} is closed`, event.code);
                 if(event.code === 1008) {
                     try {
@@ -63,7 +71,8 @@ export const useWebsocket = ({ url, name, onMessageCallback, opponentId }) => {
         userId,
         refreshToken,
         name,
-        onMessageCallback
+        onMessageCallback,
+        onWSClose
     ]);
 
     return { wsConnection };

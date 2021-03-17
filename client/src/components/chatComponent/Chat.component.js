@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react';
 import { animateScroll } from "react-scroll";
 import "./chat.component.css";
-import { Typography, Input } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { Typography, Input, Button } from 'antd';
+import { SendOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { useInput } from "../../hooks/controlledInput.hook";
 import { ChatMessage } from "../ChatMessage/ChatMessage.component";
-import { Link } from "react-router-dom";
 
 
-export const ChatComponent = ({ chatLog }) => {
+export const ChatComponent = ({ chatLog, closeChat, showCloseButton }) => {
     const userId = useSelector(state => state.auth.userId);
     const { chatConnection, opponentNickname } = useSelector(state => state.opponent);
     const { resetInput, bind, value} = useInput();
@@ -75,10 +74,19 @@ export const ChatComponent = ({ chatLog }) => {
                         }
                     />
                 </div>
-            </div>  
-            <Link to="/game">
-                Go to Game
-            </Link>
+            </div> 
+            {
+                showCloseButton ? 
+                    <div className='chat-close-button-container'>
+                        <Button onClick={closeChat}
+                                shape='circle'
+                                icon={<CloseOutlined />}
+                                type='text'
+                                className='chat-close-button' /> 
+                    </div> : 
+                    null
+            } 
+           
         </div>
     );
 }

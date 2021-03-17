@@ -6,7 +6,7 @@ import {
     SET_CELL_SIZE
 } from "./action.types";
 
-const initialState = {
+export const initialFieldState = {
     tableState: Array(10).fill(null).map(() => Array(10).fill(1)),
     hoverState: Array(10).fill(null).map(() => Array(10).fill(0)),
     visualState: [],
@@ -14,7 +14,7 @@ const initialState = {
     cellSize: 50
 }
 
-export const setupReducer = (state = initialState, action) => {
+export const setupReducer = (state = initialFieldState, action) => {
     switch(action.type) {
         case SET_TABLE_STATE: 
             return {
@@ -25,8 +25,11 @@ export const setupReducer = (state = initialState, action) => {
                 ...state, hoverState: action.payload
             }
         case SET_SETTING_PROGRESS: 
+        const nextProgressState = action.payload != null ?
+                                  action.payload : 
+                                  state.settingProgress + 1
             return {
-                ...state, settingProgress: state.settingProgress + 1
+                ...state, settingProgress: nextProgressState
             }
         case SET_CELL_SIZE:
             return {
@@ -34,8 +37,14 @@ export const setupReducer = (state = initialState, action) => {
             }
         case SET_VISUAL_STATE:
             const payload = action.payload;
+            if(!payload) {
+                return {
+                    ...state, visualState: []
+                }
+            }
+
             const foundIndex = state.visualState.findIndex(item => {
-                return item.id === action.payload.id
+                return item.id === payload.id
             });
             const newArray = [...state.visualState];
 

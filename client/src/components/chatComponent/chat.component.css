@@ -2,6 +2,7 @@
   width: 400px;
   max-width: 99%;
   margin: 0 auto;
+  position: relative;
 }
 
 .chat_title {
@@ -28,4 +29,10 @@
   height: 70vh;
   overflow-y: auto;
   padding: 0 10px;
+}
+
+.chat-close-button-container {
+  position: absolute;
+  top: 5px;
+  left: 10px;
 }

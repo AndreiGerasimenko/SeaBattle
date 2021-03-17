@@ -1,5 +1,4 @@
 export const clearTableState = ({ x, y, size, orientation, tableState}) => {
-
     if(orientation === 'vertical') {
         const topBorder = y;
         const bottomBorder = y + size - 1;

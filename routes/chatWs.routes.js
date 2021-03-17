@@ -2,8 +2,10 @@ const { Router } = require("express");
 const { deleteMatchPair, 
         getChatHistory, 
         sendMessage,
-        addWsConnection } = require("../store/currentMatchPairs");
+        addWsConnection,
+        closeConnection } = require("../store/currentMatchPairs");
 const { broadcastPlayerList } = require("../store/playerList");
+const gameCoordinator = require("../store/gameCoordinator");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 
@@ -13,6 +15,7 @@ router.ws('/', async (ws, req) => {
     let decodedToken = null;
     let opponentId = null;
     let userId = null;
+    let gameId = null;
     
     try {
         decodedToken = jwt.verify(req.query.token, config.get("jwtSecret"));
@@ -35,13 +38,25 @@ router.ws('/', async (ws, req) => {
                                   parsedMessage.payload.time 
                                 );
                 break;
+            case "FIELD_SETUP_INIT": 
+                gameCoordinator.initField({ 
+                    gameId,
+                    userId, 
+                    fieldSetup: parsedMessage.payload
+            });
+            break;
             default: 
                 console.log("Unknown Chat message type");
         }
     });
 
-    ws.on("close", () => {
-        console.log("Connection CHAT closed");
+    ws.on("close", (code) => {
+        if(code === 1001) {
+            // Here will be check of the end of the game
+            closeConnection(userId, 4000);
+        }
+
+        console.log("Connection CHAT closed", code);
         deleteMatchPair({
             id: userId,
             opponentId
@@ -50,6 +65,12 @@ router.ws('/', async (ws, req) => {
     });
 
     addWsConnection(userId, ws);
+
+    gameId = gameCoordinator.startGame({
+        id: userId,
+        opponentId,
+        ws
+    });
 
     const chatHistory = await getChatHistory(userId, opponentId);
 

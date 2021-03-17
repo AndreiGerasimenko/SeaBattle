@@ -130,8 +130,7 @@ export const AuthWrapper = () => {
             onOk={onOkModalClick}
             onCancel={onCancelModalClick}
             confirmLoading={confirmLoading}
-        />
-            
+        /> 
         </>
     ) 
 }

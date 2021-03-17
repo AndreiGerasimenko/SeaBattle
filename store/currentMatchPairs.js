@@ -43,9 +43,6 @@ const addMatchPair = async ({id, nickname, opponentId, opponentNickname}) => {
         await chatRoom.save();
     }
 
-    // broadcastPlayerList();
-
-    // console.log(matches.length, "Matches");
 }
 
 const deleteMatchPair = ({id, opponentId}) => {
@@ -97,6 +94,19 @@ const sendMessage = async (id, opponentId, text, time) => {
     );
 }
 
+const closeConnection = (id, code) => {
+    const matchPair = matches.find(item => {
+        return item.id == id || item.opponentId == id
+    }); 
+
+    if(matchPair) {
+        const wsConnection = matchPair.id == id ? 
+                             matchPair.opponentWs : 
+                             matchPair.ws;
+        wsConnection.close(code);
+    }
+}
+
 const getCurrentMatchesID = () => {
     const arrayOfId = [];
     matches.forEach(match => {
@@ -111,4 +121,5 @@ module.exports = { addMatchPair,
                    getChatHistory, 
                    sendMessage,
                    addWsConnection,
-                   getCurrentMatchesID };
+                   getCurrentMatchesID,
+                   closeConnection };

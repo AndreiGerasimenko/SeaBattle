@@ -12,7 +12,9 @@ import "./ship.css";
 export const Ship = ({size, orientation, id, onField, x, y}) => {
     const dispatch = useDispatch();
     const tableCopy = useRef(null);
-    const tableState = useSelector(state => state.gameFieldSetup.tableState);
+    const tableState = useSelector(state => {
+        return JSON.parse(JSON.stringify(state.gameFieldSetup.tableState));
+    });
     const cellSize = useSelector(state => state.gameFieldSetup.cellSize);
 
     const [{isDragging}, drag] = useDrag({

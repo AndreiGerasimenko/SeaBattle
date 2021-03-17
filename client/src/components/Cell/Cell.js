@@ -12,7 +12,9 @@ import './cell.css';
 export const Cell = ({ x, y, status, children }) => {
 
     const hoveredState = useSelector(state => state.gameFieldSetup.hoverState);
-    const tableState = useSelector(state => state.gameFieldSetup.tableState);
+    const tableState = useSelector(state => {
+        return JSON.parse(JSON.stringify(state.gameFieldSetup.tableState));
+    });
     const cellSize = useSelector(state => state.gameFieldSetup.cellSize);
     const dispatch = useDispatch();
     const isError = useRef(false);

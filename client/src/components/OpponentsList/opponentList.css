@@ -17,6 +17,8 @@
 .opp-list-container {
   width: 70%;
   margin: 0 auto;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .opp-button-container {
