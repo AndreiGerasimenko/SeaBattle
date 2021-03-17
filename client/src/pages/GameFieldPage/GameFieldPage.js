@@ -62,7 +62,7 @@ export const GameFieldPage = () => {
   }, [openChat]);
 
   const { wsConnection } = useWebsocket({ 
-    url: 'ws://localhost:5000/api/chat', 
+    url: 'ws://localhost:5000/api/game', 
     name: "chatSocket",
     onMessageCallback,
     onWSClose,

@@ -7,7 +7,7 @@ const expressWs = require('express-ws')(app);
 
 app.use(express.json());
 app.use("/api/auth", require("./routes/auth.routes"));
-app.use("/api/chat", require("./routes/chatWs.routes"));
+app.use("/api/game", require("./routes/gameWs.routes"));
 app.use("/api/globalWs", require("./routes/globalWs.routes"));
 
 const PORT = config.get("port") || 5000;
