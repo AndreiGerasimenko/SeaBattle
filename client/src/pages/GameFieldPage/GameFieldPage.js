@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { setOpponentID, setOpponentNickname, setChatConnection } from "../../redux/actions";
+import { setOpponentID, setOpponentNickname, setChatConnection, setCellSize } from "../../redux/actions";
 import { ChatWrapper } from "../../components/chatWrapper/chatWrapper.component";
+import { ModalComponent } from "../../components/Modal/Modal.component";
 import { MainFieldSetup } from "../../components/MainFieldSetup/MainFieldSetup.component";
+import { BattleFieldsContainer } from '../../components/BattleFieldsContainer/BattleFieldsContainer'
 import { useBreakPoint } from "../../hooks/breakpoint.hook";
 import { useWebsocket } from "../../hooks/websocket.hook";
 import { showNotification } from "../../functions/showNotification";
 import { discardFieldChanges } from "../../functions/discardFieldchanges";
+import { useMediaQuery } from 'react-responsive';
+import { useFieldState } from '../../hooks/fieldState.hook'
 import "./gameField.css";
 
 export const GameFieldPage = () => {
@@ -14,6 +18,19 @@ export const GameFieldPage = () => {
   const opponentID = useSelector(state => state.opponent.opponentId);
   const [chatLog, setChatLog] = useState(null);
   const [hiddenMessages, setHiddenMessages] = useState(0);
+  const [isWaitingOpponent, setWaitingOpponent] = useState(false);
+  const [yourTurn, setYourTurn] = useState(null);
+
+  const { 
+    fieldState: fieldSetup,
+    changeState: changeFieldState,
+    setFieldState: setFieldSetup
+  } = useFieldState(null);
+
+  const { 
+    fieldState: enemyFieldState,
+    changeState: changeEnemyFieldState,
+  } = useFieldState(Array(10).fill(null).map(_ => Array(10).fill(1))); 
 
   const { chatShown,
     isSmScreenSize,
@@ -37,11 +54,20 @@ export const GameFieldPage = () => {
             
             if(isSmScreenSize && !chatShown) setHiddenMessages(prev => prev + 1);
             break;
+        case "WAITING_FOR_OPPONENT": 
+            console.log("Waiting for the opponent");
+            setWaitingOpponent(true);
+            break;
+        case "GAME_START": 
+            console.log("Log from the game start", message.payload);
+            setFieldSetup(message.payload);
+            setWaitingOpponent(false);
+            break;
         default: 
             console.log("Unknown message type!"); 
     }
 
-  }, [isSmScreenSize, chatShown]);
+  }, [isSmScreenSize, chatShown, setFieldSetup]);
 
   const onWSClose = (event) => {
     if(event.code === 4000) {
@@ -50,10 +76,16 @@ export const GameFieldPage = () => {
             description: "Your opponent has abandoned the game",
             type: "success"
         })
+    } else if(event.code === 4001) {
+        showNotification({
+            message: "Back to menu",
+            description: "The opponent left before the start of the game."
+        })
+    }
+
     dispatch(setOpponentID(null));
     dispatch(setOpponentNickname(null));
     discardFieldChanges().map(item => dispatch(item));
-    }
   }
 
   const onIconClickHandler = useCallback(() => {
@@ -63,11 +95,21 @@ export const GameFieldPage = () => {
 
   const { wsConnection } = useWebsocket({ 
     url: 'ws://localhost:5000/api/game', 
-    name: "chatSocket",
+    name: "gameSocket",
     onMessageCallback,
     onWSClose,
     opponentId: opponentID
   });
+
+  const onCellClick = useCallback((x, y) => {
+    if(enemyFieldState[x][y] > 1) return;
+    wsConnection.send(
+      JSON.stringify({
+        type: "SHOT",
+        payload: { x, y }
+      })
+    )
+  }, [enemyFieldState, wsConnection])
 
   useEffect(() => {
     setHiddenMessages(0);
@@ -90,10 +132,27 @@ export const GameFieldPage = () => {
     }
   },[dispatch]);
 
+  const isSmallScreenSize = useMediaQuery(
+    { maxWidth: 535 }
+);
+
+useEffect(() => {
+    const size = isSmallScreenSize ? 30 : 50;
+    dispatch(setCellSize(size));
+}, [dispatch, isSmallScreenSize ]);
+
   return (
             <div className="game-container">
               <div className="game">
-                <MainFieldSetup />
+                {
+                  fieldSetup ? 
+
+                    <BattleFieldsContainer 
+                      fieldSetup={fieldSetup}
+                      enemyFieldState={enemyFieldState}
+                      onCellClick={onCellClick}
+                    /> : <MainFieldSetup />
+                }
               </div>
 
               <ChatWrapper
@@ -104,6 +163,11 @@ export const GameFieldPage = () => {
                 onCloseDrawer={onCloseDrawer}
                 chatShown={chatShown}
               />
+
+              <ModalComponent 
+                type={isWaitingOpponent ? "Waiting..." : null }
+                modalText="Waiting for opponent`s field setup"
+              /> 
               
             </div>  
       );

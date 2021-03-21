@@ -1,0 +1,27 @@
+.cell {
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ship-on-field {
+  background-color: grey;
+}
+
+.empty {
+  background-color: white;
+}
+
+.ship_hit {
+  background-color: red;
+}
+
+.empty_hit {
+  background-color: blue;
+}
+
+.hoverable:hover {
+  border: 2px solid yellowgreen;
+  cursor: pointer;
+}

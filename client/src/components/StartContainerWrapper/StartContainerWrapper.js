@@ -25,8 +25,6 @@ export const StartContainerWrapper = () => {
                 payload: tableStateToSend
             })
         );
-
-        console.log("Table State for sending", tableStateToSend);
     }
 
     return (

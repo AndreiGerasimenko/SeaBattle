@@ -28,7 +28,7 @@ router.ws('/', async (ws, req) => {
     ws.on('message', async message => {
         
         const parsedMessage = JSON.parse(message);
-        console.log("Received message from chat - ", parsedMessage);
+        // console.log("Received message from chat - ", parsedMessage);
 
         switch(parsedMessage.type) {
             case "CHAT_MESSAGE":
@@ -42,9 +42,13 @@ router.ws('/', async (ws, req) => {
                 gameCoordinator.initField({ 
                     gameId,
                     userId, 
-                    fieldSetup: parsedMessage.payload
-            });
-            break;
+                    fieldSetup: parsedMessage.payload,
+                    opponentId
+                });
+                break;
+            case "SHOT":
+                console.log("SHOT FROM THE PLAYER", parsedMessage.payload);
+                break;
             default: 
                 console.log("Unknown Chat message type");
         }
@@ -52,15 +56,20 @@ router.ws('/', async (ws, req) => {
 
     ws.on("close", (code) => {
         if(code === 1001) {
-            // Here will be check of the end of the game
-            closeConnection(userId, 4000);
+            console.log(`Entered ${userId}`);
+            if(gameCoordinator.isGameGoing(gameId)) {
+                closeConnection(userId, 4000);
+            } else {
+                closeConnection(userId, 4001);
+            }   
         }
 
-        console.log("Connection CHAT closed", code);
+        console.log(`Connection CHAT closed ${userId}`, code);
         deleteMatchPair({
             id: userId,
             opponentId
         });
+        gameCoordinator.endGame({ gameId });
         broadcastPlayerList();
     });
 

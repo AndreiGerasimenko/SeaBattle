@@ -5,10 +5,8 @@ const gamesInProgress = new Map();
 
 const startGame = ({ id, ws, opponentId }) => {
 
-    for (let game of gamesInProgress) {
-        if(game[1].has(id) && game[1].get(id).ws) return game[0];
-        
-        if(game[1].has(id) && !game[1].get(id).ws) {
+    for (let game of gamesInProgress) {       
+        if(game[1].has(id)) {
             gamesInProgress.get(game[0]).get(id).ws = ws;
             return game[0]
         }
@@ -25,18 +23,55 @@ const startGame = ({ id, ws, opponentId }) => {
         ws: null,
         field: [],
         timer: null
-    }).set('turn', id);
+    }).set('turn', id).set('gameIsGoing', false);
     gamesInProgress.set(gameId, gameInfo);
 
     return gameId;
 }
 
-const initField = ({ gameId, userId, fieldSetup }) => {
+const endGame =({ gameId }) => {
+    gamesInProgress.delete(gameId);
+}
+
+const initField = ({ gameId, userId, fieldSetup, opponentId }) => {
     gamesInProgress.get(gameId).get(userId).field = fieldSetup;
+    if(!gamesInProgress.get(gameId).get(opponentId).field.length) {
+        gamesInProgress.get(gameId).get(userId).ws.send(
+            JSON.stringify({
+                type: "WAITING_FOR_OPPONENT",
+            })
+        )
+    } else {
+        gamesInProgress.get(gameId).get(userId).ws.send(
+            JSON.stringify({
+                type: "GAME_START",
+                payload: JSON.parse(
+                    JSON.stringify(gamesInProgress.get(gameId).get(userId).field)
+                )
+            })
+        );
+        gamesInProgress.get(gameId).get(opponentId).ws.send(
+            JSON.stringify({
+                type: "GAME_START",
+                payload: JSON.parse(
+                    JSON.stringify(gamesInProgress.get(gameId).get(opponentId).field)
+                )
+            })
+        )
+
+        gamesInProgress.get(gameId).set('gameIsGoing', true);
+    } 
+}
+
+const isGameGoing = (gameId) => {
+    if(!gamesInProgress.get(gameId)) return false;
+    return gamesInProgress.get(gameId).get('gameIsGoing');
 }
 
 module.exports = {
     startGame,
-    initField
+    initField,
+    endGame,
+    isGameGoing
 }
 

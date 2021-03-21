@@ -13,7 +13,9 @@ export const ModalComponent = ({type, onOk, onCancel, modalText, confirmLoading}
             maskClosable={false}
             footer={null}
         >
-            {"Waiting for the response"}
+            {
+                modalText || "Waiting for the response"
+            }
         </Modal>
         )
     } else {
