@@ -13,6 +13,15 @@ const sendMessageWs = (gameId, id, type, payload) => {
     )
 }
 
+const isEndGame = (fieldState) => {
+    for(let i = 0; i < 10; i++) {
+        for(let j = 0; j < 10; j++) {
+            if(fieldState[i][j] == 0) return false;
+        }
+    }
+    return true;
+}
+
 const startGame = ({ id, ws, opponentId }) => {
 
     for (let game of gamesInProgress) {       
@@ -33,7 +42,7 @@ const startGame = ({ id, ws, opponentId }) => {
         ws: null,
         field: [],
         timer: null
-    }).set('turn', id).set('gameIsGoing', false);
+    }).set('turn', id).set('gameIsGoing', false).set('isGameFinished', false);
     gamesInProgress.set(gameId, gameInfo);
 
     return gameId;
@@ -69,6 +78,11 @@ const initField = ({ gameId, userId, fieldSetup, opponentId }) => {
 const isGameGoing = (gameId) => {
     if(!gamesInProgress.get(gameId)) return false;
     return gamesInProgress.get(gameId).get('gameIsGoing');
+}
+
+const isGameFinished = (gameId) => {
+    if(!gamesInProgress.get(gameId)) return false;
+    return gamesInProgress.get(gameId).get('isGameFinished');
 }
 
 const makeShot = (gameId, userId, opponentId, { x, y }) => {
@@ -112,7 +126,27 @@ const makeShot = (gameId, userId, opponentId, { x, y }) => {
         }
     );
 
-    
+    if(isEndGame(gamesInProgress.get(gameId).get(opponentId).field)) {
+        gamesInProgress.get(gameId).set('isGameFinished', true);
+        sendMessageWs(
+            gameId,
+            userId,
+            "GAME_RESULT",
+            {
+                status: 'Victory!'
+            }
+        );
+
+        sendMessageWs(
+            gameId,
+            opponentId,
+            "GAME_RESULT",
+            {
+                status: 'Defeat!'
+            }
+        );
+    }
+
 }
 
 module.exports = {
@@ -120,6 +154,7 @@ module.exports = {
     initField,
     endGame,
     isGameGoing,
+    isGameFinished,
     makeShot
 }
 

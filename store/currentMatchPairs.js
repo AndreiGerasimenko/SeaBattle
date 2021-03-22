@@ -57,7 +57,7 @@ const getChatHistory = async (id, opponentId) => {
     const conversation = await ChatRoom.findOne({ participants: { $all: [id, opponentId] } })
                                         .populate('conversationHistory')
                                         .select({ conversationHistory: 1, _id: 0 });
-    return conversation.conversationHistory;
+    return conversation.conversationHistory.slice(-100);
 }
 
 const sendMessage = async (id, opponentId, text, time) => {

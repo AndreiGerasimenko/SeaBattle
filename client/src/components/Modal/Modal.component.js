@@ -1,7 +1,31 @@
 import React from 'react';
 import { Modal } from 'antd';
 
-export const ModalComponent = ({type, onOk, onCancel, modalText, confirmLoading}) => {
+export const ModalComponent = ({
+    type, 
+    onOk, 
+    onCancel, 
+    modalText, 
+    confirmLoading, 
+    confirmNotification
+}) => {
+    if(confirmNotification) {
+        return (
+            <Modal 
+            title={type}
+            visible={!!type}
+            onOk={onOk}
+            centered={true}
+            closable={false}
+            keyboard={false}
+            maskClosable={false}
+            cancelButtonProps={{ style: { display: 'none'}}}
+        >
+            {modalText}
+        </Modal>
+        )
+    }
+
     if(type === "Waiting...") {
         return (
             <Modal 

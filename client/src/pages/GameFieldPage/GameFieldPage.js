@@ -21,6 +21,7 @@ export const GameFieldPage = () => {
   const [hiddenMessages, setHiddenMessages] = useState(0);
   const [isWaitingOpponent, setWaitingOpponent] = useState(false);
   const [isYourTurn, setIsYourTurn] = useState(null);
+  const [gameResult, setGameResult] = useState(null);
 
   const { 
     fieldState: fieldSetup,
@@ -74,6 +75,9 @@ export const GameFieldPage = () => {
             changeFieldState(message.payload.changes);
             setIsYourTurn(message.payload.turn);
             break;
+        case "GAME_RESULT":
+            setGameResult(message.payload.status);
+            break;
         default: 
             console.log("Unknown message type!"); 
     }
@@ -83,7 +87,8 @@ export const GameFieldPage = () => {
     setFieldSetup, 
     changeFieldState, 
     changeEnemyFieldState, 
-    setEnemyFieldState
+    setEnemyFieldState,
+    setGameResult
   ]);
 
   const onWSClose = (event) => {
@@ -104,6 +109,12 @@ export const GameFieldPage = () => {
     dispatch(setOpponentNickname(null));
     discardFieldChanges().map(item => dispatch(item));
   }
+
+  const onOKModalHandler = useCallback(() => {
+    dispatch(setOpponentID(null));
+    dispatch(setOpponentNickname(null));
+    discardFieldChanges().map(item => dispatch(item));
+  }, [dispatch])
 
   const onIconClickHandler = useCallback(() => {
     openChat();
@@ -154,10 +165,18 @@ export const GameFieldPage = () => {
     { maxWidth: 535 }
 );
 
-useEffect(() => {
-    const size = isSmallScreenSize ? 30 : 50;
-    dispatch(setCellSize(size));
-}, [dispatch, isSmallScreenSize ]);
+  useEffect(() => {
+      const size = isSmallScreenSize ? 30 : 50;
+      dispatch(setCellSize(size));
+  }, [dispatch, isSmallScreenSize ]);
+
+  const modalType = isWaitingOpponent ? "Waiting..." : gameResult
+  const modalText = isWaitingOpponent ? 
+    "Waiting for opponent`s field setup" :
+    gameResult === 'Victory!' ? 
+    'Congratulations. You defeated your opponent!' :
+    'The next time you will be more lucky!'
+
 
   return (
             <div className="game-container">
@@ -185,8 +204,10 @@ useEffect(() => {
               />
 
               <ModalComponent 
-                type={isWaitingOpponent ? "Waiting..." : null }
-                modalText="Waiting for opponent`s field setup"
+                type={ modalType }
+                modalText={modalText}
+                confirmNotification={!!gameResult}
+                onOk={onOKModalHandler}
               /> 
               
             </div>  
