@@ -5,6 +5,7 @@ import { ChatWrapper } from "../../components/chatWrapper/chatWrapper.component"
 import { ModalComponent } from "../../components/Modal/Modal.component";
 import { MainFieldSetup } from "../../components/MainFieldSetup/MainFieldSetup.component";
 import { BattleFieldsContainer } from '../../components/BattleFieldsContainer/BattleFieldsContainer'
+import { StatusTimerBox } from '../../components/StatusTimerBox/StatusTimerBox'
 import { useBreakPoint } from "../../hooks/breakpoint.hook";
 import { useWebsocket } from "../../hooks/websocket.hook";
 import { showNotification } from "../../functions/showNotification";
@@ -19,18 +20,19 @@ export const GameFieldPage = () => {
   const [chatLog, setChatLog] = useState(null);
   const [hiddenMessages, setHiddenMessages] = useState(0);
   const [isWaitingOpponent, setWaitingOpponent] = useState(false);
-  const [yourTurn, setYourTurn] = useState(null);
+  const [isYourTurn, setIsYourTurn] = useState(null);
 
   const { 
     fieldState: fieldSetup,
     changeState: changeFieldState,
     setFieldState: setFieldSetup
-  } = useFieldState(null);
+  } = useFieldState();
 
   const { 
     fieldState: enemyFieldState,
     changeState: changeEnemyFieldState,
-  } = useFieldState(Array(10).fill(null).map(_ => Array(10).fill(1))); 
+    setFieldState: setEnemyFieldState
+  } = useFieldState(); 
 
   const { chatShown,
     isSmScreenSize,
@@ -59,15 +61,30 @@ export const GameFieldPage = () => {
             setWaitingOpponent(true);
             break;
         case "GAME_START": 
-            console.log("Log from the game start", message.payload);
-            setFieldSetup(message.payload);
+            setFieldSetup(message.payload.field);
+            setEnemyFieldState(Array(10).fill(null).map(_ => Array(10).fill(1)));
+            setIsYourTurn(message.payload.turn);
             setWaitingOpponent(false);
+            break;
+        case "CHANGE_OPPONENTS_FIELD":
+            changeEnemyFieldState(message.payload.changes);
+            setIsYourTurn(message.payload.turn);
+            break;
+        case "CHANGE_YOUR_FIELD":
+            changeFieldState(message.payload.changes);
+            setIsYourTurn(message.payload.turn);
             break;
         default: 
             console.log("Unknown message type!"); 
     }
-
-  }, [isSmScreenSize, chatShown, setFieldSetup]);
+  }, [
+    isSmScreenSize, 
+    chatShown, 
+    setFieldSetup, 
+    changeFieldState, 
+    changeEnemyFieldState, 
+    setEnemyFieldState
+  ]);
 
   const onWSClose = (event) => {
     if(event.code === 4000) {
@@ -102,6 +119,7 @@ export const GameFieldPage = () => {
   });
 
   const onCellClick = useCallback((x, y) => {
+    if(!isYourTurn) return;
     if(enemyFieldState[x][y] > 1) return;
     wsConnection.send(
       JSON.stringify({
@@ -109,7 +127,7 @@ export const GameFieldPage = () => {
         payload: { x, y }
       })
     )
-  }, [enemyFieldState, wsConnection])
+  }, [enemyFieldState, wsConnection, isYourTurn])
 
   useEffect(() => {
     setHiddenMessages(0);
@@ -146,12 +164,14 @@ useEffect(() => {
               <div className="game">
                 {
                   fieldSetup ? 
-
-                    <BattleFieldsContainer 
-                      fieldSetup={fieldSetup}
-                      enemyFieldState={enemyFieldState}
-                      onCellClick={onCellClick}
-                    /> : <MainFieldSetup />
+                    <>
+                      <StatusTimerBox isYourTurn={isYourTurn} />
+                      <BattleFieldsContainer 
+                        fieldSetup={fieldSetup}
+                        enemyFieldState={enemyFieldState}
+                        onCellClick={onCellClick}
+                      />
+                    </> : <MainFieldSetup />
                 }
               </div>
 

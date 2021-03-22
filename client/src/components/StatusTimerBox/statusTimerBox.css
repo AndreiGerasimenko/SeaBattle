@@ -1,0 +1,8 @@
+.statusBox-container {
+  border: 1px solid orange;
+  min-height: 10vh;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

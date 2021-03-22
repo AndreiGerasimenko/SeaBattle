@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 
-export const useFieldState = (initState) => {
-    const [fieldState, setFieldState] = useState(initState);
+export const useFieldState = () => {
+    const [fieldState, setFieldState] = useState(null);
 
     const changeState = useCallback((arrayOfChanges) => {
         const newState = JSON.parse(JSON.stringify(fieldState));

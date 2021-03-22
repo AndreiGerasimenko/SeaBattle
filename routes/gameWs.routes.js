@@ -47,7 +47,7 @@ router.ws('/', async (ws, req) => {
                 });
                 break;
             case "SHOT":
-                console.log("SHOT FROM THE PLAYER", parsedMessage.payload);
+                gameCoordinator.makeShot(gameId, userId, opponentId, parsedMessage.payload);
                 break;
             default: 
                 console.log("Unknown Chat message type");
@@ -56,7 +56,6 @@ router.ws('/', async (ws, req) => {
 
     ws.on("close", (code) => {
         if(code === 1001) {
-            console.log(`Entered ${userId}`);
             if(gameCoordinator.isGameGoing(gameId)) {
                 closeConnection(userId, 4000);
             } else {

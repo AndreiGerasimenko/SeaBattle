@@ -12,7 +12,7 @@ export const BattleField = ({ fieldState, cellSize, onClick }) => {
                 }
             }>
             {
-                fieldState.map((row, i) => {
+                fieldState?.map((row, i) => {
                     return row.map((cell, j) => {
                         return (
                             <BattleFieldCell 

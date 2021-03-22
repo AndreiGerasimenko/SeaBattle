@@ -1,7 +1,17 @@
 const mongoose = require('mongoose');
 const Game = require('../models/Game');
+const processHit = require('../functions/processShot');
 
 const gamesInProgress = new Map();
+
+const sendMessageWs = (gameId, id, type, payload) => {
+    gamesInProgress.get(gameId).get(id).ws.send(
+        JSON.stringify({
+            type,
+            payload
+        })
+    )
+}
 
 const startGame = ({ id, ws, opponentId }) => {
 
@@ -36,28 +46,21 @@ const endGame =({ gameId }) => {
 const initField = ({ gameId, userId, fieldSetup, opponentId }) => {
     gamesInProgress.get(gameId).get(userId).field = fieldSetup;
     if(!gamesInProgress.get(gameId).get(opponentId).field.length) {
-        gamesInProgress.get(gameId).get(userId).ws.send(
-            JSON.stringify({
-                type: "WAITING_FOR_OPPONENT",
-            })
-        )
+        sendMessageWs(gameId, userId, "WAITING_FOR_OPPONENT", null);
     } else {
-        gamesInProgress.get(gameId).get(userId).ws.send(
+        const turn = gamesInProgress.get(gameId).get('turn') == userId;
+        sendMessageWs(gameId, userId, "GAME_START", JSON.parse(
             JSON.stringify({
-                type: "GAME_START",
-                payload: JSON.parse(
-                    JSON.stringify(gamesInProgress.get(gameId).get(userId).field)
-                )
+                field: gamesInProgress.get(gameId).get(userId).field,
+                turn
             })
-        );
-        gamesInProgress.get(gameId).get(opponentId).ws.send(
+        ));
+        sendMessageWs(gameId, opponentId, "GAME_START", JSON.parse(
             JSON.stringify({
-                type: "GAME_START",
-                payload: JSON.parse(
-                    JSON.stringify(gamesInProgress.get(gameId).get(opponentId).field)
-                )
+                field: gamesInProgress.get(gameId).get(opponentId).field,
+                turn: !turn
             })
-        )
+        ));
 
         gamesInProgress.get(gameId).set('gameIsGoing', true);
     } 
@@ -68,10 +71,55 @@ const isGameGoing = (gameId) => {
     return gamesInProgress.get(gameId).get('gameIsGoing');
 }
 
+const makeShot = (gameId, userId, opponentId, { x, y }) => {
+    if(gamesInProgress.get(gameId).get('turn') != userId) return;
+    const cellState = gamesInProgress.get(gameId).get(opponentId).field[x][y];
+    if(cellState > 1) return;
+    gamesInProgress.get(gameId).get(opponentId).field[x][y] = +cellState + 2;
+
+    const changes = [{ x, y, state: +cellState + 2 }]; 
+
+    if(cellState != 0) {
+        gamesInProgress.get(gameId).set('turn', opponentId);
+    } else {
+        const resultArr = 
+            processHit(gamesInProgress.get(gameId).get(opponentId).field, { x, y });    
+        resultArr.forEach(({ x, y, state }) => {
+            gamesInProgress.get(gameId).get(opponentId).field[x][y] = state;
+        })
+
+        changes.push(...resultArr);
+    }
+    const turn = gamesInProgress.get(gameId).get('turn') == userId;
+
+    sendMessageWs(
+        gameId,
+        userId,
+        "CHANGE_OPPONENTS_FIELD",
+        {
+            changes,
+            turn
+        }
+    );
+
+    sendMessageWs(
+        gameId,
+        opponentId,
+        "CHANGE_YOUR_FIELD",
+        {
+            changes,
+            turn: !turn
+        }
+    );
+
+    
+}
+
 module.exports = {
     startGame,
     initField,
     endGame,
-    isGameGoing
+    isGameGoing,
+    makeShot
 }
 
