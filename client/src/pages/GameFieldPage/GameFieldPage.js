@@ -162,11 +162,11 @@ export const GameFieldPage = () => {
   },[dispatch]);
 
   const isSmallScreenSize = useMediaQuery(
-    { maxWidth: 535 }
+    { maxWidth: 570 }
 );
 
   useEffect(() => {
-      const size = isSmallScreenSize ? 30 : 50;
+      const size = isSmallScreenSize ? 30 : 48;
       dispatch(setCellSize(size));
   }, [dispatch, isSmallScreenSize ]);
 
@@ -184,7 +184,7 @@ export const GameFieldPage = () => {
                 {
                   fieldSetup ? 
                     <>
-                      <StatusTimerBox isYourTurn={isYourTurn} />
+                      <StatusTimerBox isYourTurn={{ turn: isYourTurn}} />
                       <BattleFieldsContainer 
                         fieldSetup={fieldSetup}
                         enemyFieldState={enemyFieldState}

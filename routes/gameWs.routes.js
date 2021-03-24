@@ -47,18 +47,19 @@ router.ws('/', async (ws, req) => {
                 });
                 break;
             case "SHOT":
-                gameCoordinator.makeShot(gameId, userId, opponentId, parsedMessage.payload);
+                await gameCoordinator.makeShot(gameId, userId, opponentId, parsedMessage.payload);
                 break;
             default: 
                 console.log("Unknown Chat message type");
         }
     });
 
-    ws.on("close", (code) => {
+    ws.on("close", async (code) => {
         if(code === 1001) {
             if(!gameCoordinator.isGameFinished(gameId)) {
                 if(gameCoordinator.isGameGoing(gameId)) {
                     closeConnection(userId, 4000);
+                    await gameCoordinator.saveGameDB(gameId, opponentId, userId);
                 } else {
                     closeConnection(userId, 4001);
                 }   

@@ -13,6 +13,52 @@ const sendMessageWs = (gameId, id, type, payload) => {
     )
 }
 
+const setUpTimer = (gameId, userId, opponentId) => {
+    let timerId = setTimeout(function penalty() {
+        const isUserIdTurn = gamesInProgress.get(gameId).get('turn') == userId;
+        const nextTurn = isUserIdTurn ?
+            opponentId : userId;
+        gamesInProgress.get(gameId).set('turn', nextTurn);
+
+        sendMessageWs(
+            gameId,
+            userId,
+            "CHANGE_OPPONENTS_FIELD",
+            {
+                changes: [],
+                turn: !isUserIdTurn
+            }
+        );
+
+        sendMessageWs(
+            gameId,
+            opponentId,
+            "CHANGE_OPPONENTS_FIELD",
+            {
+                changes: [],
+                turn: isUserIdTurn
+            }
+        );
+        
+        timerId = setTimeout(penalty, 30000);
+        gamesInProgress.get(gameId).set('timer', timerId);
+    }, 30000);
+
+    gamesInProgress.get(gameId).set('timer', timerId);
+}
+
+const saveGameDB = async (gameId, winnerId, loserId) => {
+    const gameToSave = {
+        _id: gameId,
+        players: [winnerId, loserId],
+        winner: winnerId,
+        durationTurns: gamesInProgress.get(gameId).get('currentTurn'),
+        time: Date.now()
+    }
+
+    await Game.updateOne({ _id: gameId }, gameToSave, { upsert: true });
+}
+
 const isEndGame = (fieldState) => {
     for(let i = 0; i < 10; i++) {
         for(let j = 0; j < 10; j++) {
@@ -37,18 +83,19 @@ const startGame = ({ id, ws, opponentId }) => {
     gameInfo.set(id, {
         ws,
         field: [],
-        timer: null
     }).set(opponentId, {
         ws: null,
         field: [],
-        timer: null
-    }).set('turn', id).set('gameIsGoing', false).set('isGameFinished', false);
+    }).set('turn', id).set('timer', null).set('currentTurn', 1)
+    .set('gameIsGoing', false).set('isGameFinished', false);
     gamesInProgress.set(gameId, gameInfo);
 
     return gameId;
 }
 
 const endGame =({ gameId }) => {
+    if(!gamesInProgress.get(gameId)) return;
+    clearTimeout(gamesInProgress.get(gameId).get('timer'));
     gamesInProgress.delete(gameId);
 }
 
@@ -71,6 +118,7 @@ const initField = ({ gameId, userId, fieldSetup, opponentId }) => {
             })
         ));
 
+        setUpTimer(gameId, userId, opponentId);
         gamesInProgress.get(gameId).set('gameIsGoing', true);
     } 
 }
@@ -85,7 +133,7 @@ const isGameFinished = (gameId) => {
     return gamesInProgress.get(gameId).get('isGameFinished');
 }
 
-const makeShot = (gameId, userId, opponentId, { x, y }) => {
+const makeShot = async (gameId, userId, opponentId, { x, y }) => {
     if(gamesInProgress.get(gameId).get('turn') != userId) return;
     const cellState = gamesInProgress.get(gameId).get(opponentId).field[x][y];
     if(cellState > 1) return;
@@ -95,6 +143,10 @@ const makeShot = (gameId, userId, opponentId, { x, y }) => {
 
     if(cellState != 0) {
         gamesInProgress.get(gameId).set('turn', opponentId);
+        gamesInProgress.get(gameId).set(
+            'currentTurn',
+            gamesInProgress.get(gameId).get('currentTurn') + 1
+        );
     } else {
         const resultArr = 
             processHit(gamesInProgress.get(gameId).get(opponentId).field, { x, y });    
@@ -126,6 +178,9 @@ const makeShot = (gameId, userId, opponentId, { x, y }) => {
         }
     );
 
+    clearTimeout(gamesInProgress.get(gameId).get('timer'));
+    setUpTimer(gameId, userId, opponentId);
+
     if(isEndGame(gamesInProgress.get(gameId).get(opponentId).field)) {
         gamesInProgress.get(gameId).set('isGameFinished', true);
         sendMessageWs(
@@ -145,6 +200,9 @@ const makeShot = (gameId, userId, opponentId, { x, y }) => {
                 status: 'Defeat!'
             }
         );
+        
+        await saveGameDB(gameId, userId, opponentId);
+        clearTimeout(gamesInProgress.get(gameId).get('timer'));
     }
 
 }
@@ -155,6 +213,7 @@ module.exports = {
     endGame,
     isGameGoing,
     isGameFinished,
-    makeShot
+    makeShot,
+    saveGameDB
 }
 

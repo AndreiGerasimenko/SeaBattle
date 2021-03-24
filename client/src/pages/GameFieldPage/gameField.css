@@ -9,4 +9,6 @@
 .game {
   flex-grow: 1;
   border: 1px solid green;
+  height: 99vh;
+  overflow-y: auto;
 }
