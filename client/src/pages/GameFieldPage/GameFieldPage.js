@@ -64,16 +64,16 @@ export const GameFieldPage = () => {
         case "GAME_START": 
             setFieldSetup(message.payload.field);
             setEnemyFieldState(Array(10).fill(null).map(_ => Array(10).fill(1)));
-            setIsYourTurn(message.payload.turn);
+            setIsYourTurn({ turn: message.payload.turn });
             setWaitingOpponent(false);
             break;
         case "CHANGE_OPPONENTS_FIELD":
             changeEnemyFieldState(message.payload.changes);
-            setIsYourTurn(message.payload.turn);
+            setIsYourTurn({ turn: message.payload.turn });
             break;
         case "CHANGE_YOUR_FIELD":
             changeFieldState(message.payload.changes);
-            setIsYourTurn(message.payload.turn);
+            setIsYourTurn({ turn: message.payload.turn });
             break;
         case "GAME_RESULT":
             setGameResult(message.payload.status);
@@ -184,7 +184,7 @@ export const GameFieldPage = () => {
                 {
                   fieldSetup ? 
                     <>
-                      <StatusTimerBox isYourTurn={{ turn: isYourTurn}} />
+                      <StatusTimerBox isYourTurn={isYourTurn} />
                       <BattleFieldsContainer 
                         fieldSetup={fieldSetup}
                         enemyFieldState={enemyFieldState}

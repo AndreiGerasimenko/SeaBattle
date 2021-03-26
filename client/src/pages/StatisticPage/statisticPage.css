@@ -1,0 +1,26 @@
+.statistic-container {
+  padding-top: 10px;
+  position: relative;
+}
+
+.ant-statistic {
+  text-align: center;
+}
+
+.winrate-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spin-container {
+  display: flex;
+  padding-top: 30px;
+  justify-content: center;
+}
+
+.stat-backToMenue-container {
+  position: absolute;
+  top: 10px;
+  left: 2vw;
+}

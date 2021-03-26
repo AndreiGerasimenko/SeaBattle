@@ -82,7 +82,7 @@ export const ChatComponent = ({ chatLog, closeChat, showCloseButton }) => {
                                 shape='circle'
                                 icon={<CloseOutlined />}
                                 type='text'
-                                className='chat-close-button' /> 
+                        /> 
                     </div> : 
                     null
             } 

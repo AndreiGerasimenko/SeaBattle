@@ -4,7 +4,7 @@ import './statusTimerBox.css'
 
 export const StatusTimerBox = ({ isYourTurn }) => {
 
-    const status = isYourTurn.turn ? 
+    const status = isYourTurn?.turn ? 
         <Timer isYourTurn={isYourTurn}/> : 
         'Opponents turn'; 
 

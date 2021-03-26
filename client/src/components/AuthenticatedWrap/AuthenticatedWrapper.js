@@ -6,7 +6,7 @@ import { setPlayerList,
          setOpponentNickname } from "../../redux/actions";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { MainMenuPage } from "../../pages/MainMenuPage/MainMenuPage";
-// import { StatisticPage } from "../../pages/StatisticPage";
+import { StatisticPage } from "../../pages/StatisticPage/StatisticPage";
 import { GameFieldPage } from "../../pages/GameFieldPage/GameFieldPage";
 import { useWebsocket } from "../../hooks/websocket.hook";
 import { ModalComponent } from "../Modal/Modal.component";
@@ -116,7 +116,7 @@ export const AuthWrapper = () => {
                         <MainMenuPage />
                     </Route>
                     <Route path="/statistics" exact>
-                        <GameFieldPage />
+                        <StatisticPage />
                     </Route>
                     <Route path="/opponents" exact>
                         <OpponentsList />

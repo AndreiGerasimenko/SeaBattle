@@ -9,6 +9,10 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/game", require("./routes/gameWs.routes"));
 app.use("/api/globalWs", require("./routes/globalWs.routes"));
+app.use(
+  "/api/statistic", 
+  require("./middleware/auth.middleware"),
+  require("./routes/stitistic.routes"));
 
 const PORT = config.get("port") || 5000;
 
