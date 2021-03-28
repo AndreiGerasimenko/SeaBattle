@@ -14,7 +14,7 @@ app.use(
   require("./middleware/auth.middleware"),
   require("./routes/stitistic.routes"));
 
-const PORT = config.get("port") || 5000;
+const PORT = process.env.PORT || 5000;
 
 async function start() {
   try {
@@ -30,6 +30,10 @@ async function start() {
     console.log("Server error", error.message);
     process.exit(1);
   }
+}
+
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
 }
 
 start();

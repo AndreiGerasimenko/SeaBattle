@@ -31,8 +31,8 @@ export const countStatistic = (arr, userId) => {
 
     return {
         games,
-        avgMoves: gamesWon ? movesInWonGames / gamesWon : 0,
-        winRate: (gamesWon / games) * 100,
+        avgMoves: gamesWon ? Math.floor(movesInWonGames / gamesWon) : 0,
+        winRate: Math.round((gamesWon / games) * 100),
         tableDataSource
     }
 }

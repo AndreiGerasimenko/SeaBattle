@@ -14,6 +14,8 @@ import { useMediaQuery } from 'react-responsive';
 import { useFieldState } from '../../hooks/fieldState.hook'
 import "./gameField.css";
 
+const HOST = window.location.origin.replace(/^http/, 'ws') + '/api/game';
+
 export const GameFieldPage = () => {
   const dispatch = useDispatch();
   const opponentID = useSelector(state => state.opponent.opponentId);
@@ -122,7 +124,8 @@ export const GameFieldPage = () => {
   }, [openChat]);
 
   const { wsConnection } = useWebsocket({ 
-    url: 'ws://localhost:5000/api/game', 
+    // url: 'ws://localhost:5000/api/game', 
+    url: HOST,
     name: "gameSocket",
     onMessageCallback,
     onWSClose,

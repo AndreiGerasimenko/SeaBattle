@@ -13,6 +13,8 @@ import { ModalComponent } from "../Modal/Modal.component";
 import { OpponentsList } from "../OpponentsList/OpponentList";
 import { showNotification } from '../../functions/showNotification';
 
+const HOST = window.location.origin.replace(/^http/, 'ws') + '/api/globalWs';
+
 export const AuthWrapper = () => {
     const dispatch = useDispatch();
     const [modalType, setModalType] = useState(null);
@@ -66,7 +68,8 @@ export const AuthWrapper = () => {
     }, [dispatch, setModalType, setModalText, setOpponentId, setConfirmLoading]);
 
     const { wsConnection } = useWebsocket({ 
-            url: 'ws://localhost:5000/api/globalWs', 
+            // url: 'ws://localhost:5000/api/globalWs', 
+            url: HOST,
             name: "globalSocketConnection",
             onMessageCallback
     });
