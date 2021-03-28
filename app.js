@@ -27,7 +27,7 @@ async function start() {
     });
     app.listen(PORT, () => {
       console.log(`Server has been started on port ${PORT}...`);
-      consol.log('process.env.NODE_ENV', process.env.NODE_ENV)
+      console.log('process.env.NODE_ENV', process.env.NODE_ENV)
     });
   } catch (error) {
     console.log("Server error", error.message);
