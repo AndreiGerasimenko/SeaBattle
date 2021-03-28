@@ -8,6 +8,11 @@ const expressWs = require('express-ws')(app);
 
 app.use(express.json());
 
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client', 'build')));
+}
+
+
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/game", require("./routes/gameWs.routes"));
 app.use("/api/globalWs", require("./routes/globalWs.routes"));
@@ -34,15 +39,6 @@ async function start() {
     process.exit(1);
   }
 }
-
-if(process.env.NODE_ENV === 'production') {
-  app.get('/', (req, res) => {
-     return res.status(200).json({ message: "Works" });
-  })
-  // app.use('/', express.static(path.join(__dirname, 'client', 'build')));
-
-}
-
 
 start();
 
