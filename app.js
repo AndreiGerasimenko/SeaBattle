@@ -6,6 +6,11 @@ const app = express();
 const expressWs = require('express-ws')(app);
 
 app.use(express.json());
+
+if(process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
+
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/game", require("./routes/gameWs.routes"));
 app.use("/api/globalWs", require("./routes/globalWs.routes"));
@@ -32,9 +37,6 @@ async function start() {
   }
 }
 
-if(process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-}
 
 start();
 
