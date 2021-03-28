@@ -36,9 +36,9 @@ async function start() {
 
 if(process.env.NODE_ENV === 'production') {
   app.get('/', (req, res) => {
-    res.status(200).json({ message: "Works" });
+     return res.status(200).json({ message: "Works" });
   })
-  app.use('/', express.static(path.join(__dirname, 'client', 'build')));
+  // app.use('/', express.static(path.join(__dirname, 'client', 'build')));
 
 }
 
