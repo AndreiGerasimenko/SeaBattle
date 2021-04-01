@@ -94,6 +94,13 @@ export const GameFieldPage = () => {
   ]);
 
   const onWSClose = (event) => {
+
+    showNotification({
+      message: "WS closed",
+      description: event.code,
+      type: 'error'
+    })
+
     if(event.code === 4000) {
         showNotification({
             message: "You won",
