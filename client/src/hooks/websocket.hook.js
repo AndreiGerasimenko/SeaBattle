@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { useAuth } from "../hooks/auth.hook";
 import { useHttp } from "../hooks/http.hook";
 
+import { showNotification } from '../functions/showNotification'
+
 export const useWebsocket = ({ 
     url, 
     name, 
@@ -59,6 +61,14 @@ export const useWebsocket = ({
             
             wsConnection.onopen = () => {
                 console.log(`Connected to ${name}`);
+            }
+
+            wsConnection.onerror = (event) => {
+                showNotification({
+                    message: `WS ${name} closed`,
+                    description: JSON.stringify(event),
+                    type: 'error'
+                  })
             }
             
             wsConnection.onmessage = onMessageCallback;
