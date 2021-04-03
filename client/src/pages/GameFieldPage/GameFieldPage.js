@@ -97,7 +97,7 @@ export const GameFieldPage = () => {
 
     showNotification({
       message: "WS closed",
-      description: event.code,
+      description: `${event.code}, ${event.reason}, ${event.wasClean}`,
       type: 'error'
     })
 
