@@ -6,7 +6,8 @@ const {
         playerList,
         addPlayer, 
         deletePlayer, 
-        broadcastPlayerList
+        broadcastPlayerList,
+        pingConnection
     } = require("../store/playerList");
 const { setAllUsersFromDB } = require("../store/usersList");
 const { addMatchRequest, confirmMatchPair, rejectMatchRequest } = require("../store/mathPairs");
@@ -72,8 +73,8 @@ router.ws('/', async (ws, req) => {
     } catch(e) {
         return ws.close(1008, "Database error");
     }
-
 })
 
+setInterval(pingConnection, 30000);
 
 module.exports = router;

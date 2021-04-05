@@ -29,4 +29,12 @@ const broadcastPlayerList = () => {
         }); 
 }
 
-module.exports = { playerList, addPlayer, deletePlayer, broadcastPlayerList };
+const pingConnection = () => {
+    playerList.forEach(connection => {
+        if(connection.readyState === 1) {
+            connection.ping('check');
+        }
+    })
+}
+
+module.exports = { playerList, addPlayer, deletePlayer, broadcastPlayerList, pingConnection };
