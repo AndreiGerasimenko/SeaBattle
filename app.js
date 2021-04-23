@@ -36,10 +36,10 @@ async function start() {
 }
 
 if(process.env.NODE_ENV === 'production') {
-  app.get(/\/.+/, (req, res) => {
-    res.send(req.url);
-  })
   app.use(express.static(path.join(__dirname, 'client', 'build')));
+  app.get(/\/.+/, (req, res) => {
+    res.send(req.url + " 222");
+  })
 }
 
 start();
