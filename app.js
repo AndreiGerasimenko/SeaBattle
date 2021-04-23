@@ -8,10 +8,6 @@ const expressWs = require('express-ws')(app);
 
 app.use(express.json());
 
-if(process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'client', 'build')));
-}
-
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/game", require("./routes/gameWs.routes"));
@@ -37,6 +33,13 @@ async function start() {
     console.log("Server error", error.message);
     process.exit(1);
   }
+}
+
+if(process.env.NODE_ENV === 'production') {
+  app.get(/\/.+/, (req, res) => {
+    res.redirect('/');
+  })
+  app.use(express.static(path.join(__dirname, 'client', 'build')));
 }
 
 start();
