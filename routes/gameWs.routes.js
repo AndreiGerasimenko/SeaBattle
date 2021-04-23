@@ -55,7 +55,7 @@ router.ws('/', async (ws, req) => {
     });
 
     ws.on("close", async (code) => {
-        if(code === 1001) {
+        if(code === 1001 || code === 1005 || code === 1006) {
             if(!gameCoordinator.isGameFinished(gameId)) {
                 if(gameCoordinator.isGameGoing(gameId)) {
                     closeConnection(userId, 4000);

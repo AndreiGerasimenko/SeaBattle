@@ -28,7 +28,7 @@ export const useWebsocket = ({
     useEffect(() => {
         return () => {
             if(wsConnection && wsConnection.readyState === WebSocket.OPEN) {
-                wsConnection.close();
+                wsConnection.close(1000);
             }
         }
     }, [wsConnection])
