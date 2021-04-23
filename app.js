@@ -36,8 +36,8 @@ async function start() {
 }
 
 if(process.env.NODE_ENV === 'production') {
-  app.get(/aza/, (req, res) => {
-    res.redirect('/');
+  app.get(/\/.+/, (req, res) => {
+    res.send(req.url);
   })
   app.use(express.static(path.join(__dirname, 'client', 'build')));
 }
