@@ -6,7 +6,10 @@
 }
 
 .ship-on-field {
-  background-color: grey;
+  /* background-color: grey; */
+  background-image: url("../../assets/ship.svg");
+  background-position: center;
+  background-size: contain;
 }
 
 .empty {
@@ -14,11 +17,17 @@
 }
 
 .ship_hit {
-  background-color: red;
+  /* background-color: red; */
+  background-image: url("../../assets/bang.svg");
+  background-position: center;
+  background-size: contain;
 }
 
 .empty_hit {
-  background-color: blue;
+  /* background-color: blue; */
+  background-image: url("../../assets/waves.svg");
+  background-position: center;
+  background-size: contain;
 }
 
 .hoverable:hover {
