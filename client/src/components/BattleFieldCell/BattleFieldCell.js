@@ -21,7 +21,7 @@ export const BattleFieldCell = ({ value, onClickHandler, cellSize, children, hov
                     fontSize: `${cellSize / 2}px`,
                     backgroundImage: `url(${image})`,
                     backgroundPosition: 'center',
-                    backgroundSize: 'center'
+                    backgroundSize: 'contain'
                 }
             }
         >

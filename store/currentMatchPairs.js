@@ -116,10 +116,22 @@ const getCurrentMatchesID = () => {
     return arrayOfId;
 }
 
+const pingConnection = () => {
+    matches.forEach(match => {
+        if(match.ws && match.ws.readyState === 1) {
+            match.ws.ping('check');
+        }
+        if(match.opponentWs && match.opponentWs.readyState === 1) {
+            match.opponentWs.ping('check');
+        }
+    })
+}
+
 module.exports = { addMatchPair, 
                    deleteMatchPair, 
                    getChatHistory, 
                    sendMessage,
                    addWsConnection,
                    getCurrentMatchesID,
-                   closeConnection };
+                   closeConnection,
+                   pingConnection };

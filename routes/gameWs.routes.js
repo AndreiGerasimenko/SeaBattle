@@ -3,6 +3,7 @@ const { deleteMatchPair,
         getChatHistory, 
         sendMessage,
         addWsConnection,
+        pingConnection,
         closeConnection } = require("../store/currentMatchPairs");
 const { broadcastPlayerList } = require("../store/playerList");
 const gameCoordinator = require("../store/gameCoordinator");
@@ -90,6 +91,8 @@ router.ws('/', async (ws, req) => {
         payload: chatHistory
     }));
 })
+
+setInterval(pingConnection, 30000);
 
 
 module.exports = router;

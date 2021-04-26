@@ -1,5 +1,4 @@
 .game-container {
-  border: 1px solid red;
   display: flex;
   width: 99%;
   margin: 0 auto;
@@ -8,7 +7,6 @@
 
 .game {
   flex-grow: 1;
-  border: 1px solid green;
   height: 99vh;
   overflow-y: auto;
 }
